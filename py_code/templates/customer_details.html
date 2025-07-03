@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Details Form</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background-image: url('https://images.unsplash.com/photo-1584345604476-8ec5e12e42dd');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-color: rgba(0, 0, 0, 0.7);
+            background-blend-mode: overlay;
+        }
+    </style>
+</head>
+<body class="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md mx-auto bg-gray-800/80 backdrop-blur-sm rounded-xl shadow-lg overflow-hidden">
+        <div class="px-8 py-6">
+            <h2 class="text-2xl font-bold text-gray-100 text-center mb-6">Customer Details</h2>
+
+            <form action="/submit_purchase" method="POST" class="space-y-4">
+                <input type="hidden" name="car_id" value="{{ car_id }}">
+
+                <div>
+                    <label for="name" class="block text-sm font-medium text-gray-200">Name</label>
+                    <input type="text" id="name" name="name" required class="mt-1 block w-full rounded-md border border-gray-600 shadow-sm bg-gray-700/90 p-2 text-white placeholder-gray-400" placeholder="Enter your name">
+                </div>
+
+                <div>
+                    <label for="phone" class="block text-sm font-medium text-gray-200">Phone</label>
+                    <input type="tel" id="phone" name="phone" required class="mt-1 block w-full rounded-md border border-gray-600 shadow-sm bg-gray-700/90 p-2 text-white placeholder-gray-400" placeholder="Enter your phone number">
+                </div>
+
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-200">Email</label>
+                    <input type="email" id="email" name="email" required class="mt-1 block w-full rounded-md border border-gray-600 shadow-sm bg-gray-700/90 p-2 text-white placeholder-gray-400" placeholder="Enter your email">
+                </div>
+
+                <div>
+                    <label for="address" class="block text-sm font-medium text-gray-200">City</label>
+                    <input type="text" id="address" name="address" required class="mt-1 block w-full rounded-md border border-gray-600 shadow-sm bg-gray-700/90 p-2 text-white placeholder-gray-400" placeholder="Enter your city">
+                </div>
+
+                <button type="submit" class="w-full flex justify-center items-center gap-2 py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 transition-colors duration-200">
+                    Submit
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="22" y1="2" x2="11" y2="13"></line>
+                        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                    </svg>
+                </button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

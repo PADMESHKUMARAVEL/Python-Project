@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin-Login</title>
+    <link rel="icon" href="{{ url_for('static',filename='logo.webp')}}">
+    <link rel="stylesheet" href="{{ url_for('static',filename='style.css')}}">
+    <style>
+        .otp-container {
+            display: none;
+            margin-top: 20px;
+        }
+        .otp-input {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        .otp-input input {
+            width: 40px;
+            height: 40px;
+            text-align: center;
+            font-size: 18px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .otp-message {
+            color: white;
+            text-align: center;
+            margin: 10px 0;
+            font-size: 14px;
+        }
+        .resend-otp {
+            color: #4CAF50;
+            cursor: pointer;
+            text-align: center;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        .resend-otp:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+   <div class="Login">
+       <h2>Login</h2>
+       {% if error %}
+           <p style="color: white;">{{ error }}</p>
+       {% endif %}
+
+       <!-- Password Login Form -->
+       <form id="loginForm" action="/Confirm" method="POST">
+           <div class="ip">
+               <label for="Uname">User Name:</label>
+               <input type="text" id="Uname" name="Uname" required>
+           </div>
+           <br>
+           <div class="ip1">
+             <label for="pass">Password:</label>
+             <input type="password" id="pass" name="pass" required>
+           </div>
+           <br>
+           <div class="sbtn">
+            <button value="Sub" type="submit">Submit</button>
+            <button type="reset">Clear</button>
+           </div>
+       </form>
+
+       <!-- OTP Verification Section (hidden initially) -->
+       <div id="otpContainer" class="otp-container">
+           <p class="otp-message">We've sent an OTP to your registered email. Please enter it below:</p>
+           <form id="otpForm" action="/verify_otp" method="POST">
+               <div class="otp-input">
+                   <input type="text" name="otp1" maxlength="1" pattern="[0-9]" required>
+                   <input type="text" name="otp2" maxlength="1" pattern="[0-9]" required>
+                   <input type="text" name="otp3" maxlength="1" pattern="[0-9]" required>
+                   <input type="text" name="otp4" maxlength="1" pattern="[0-9]" required>
+                   <input type="text" name="otp5" maxlength="1" pattern="[0-9]" required>
+                   <input type="text" name="otp6" maxlength="1" pattern="[0-9]" required>
+               </div>
+               <input type="hidden" id="username" name="username">
+               <div class="sbtn">
+                   <button type="submit">Verify OTP</button>
+                   <button type="button" id="cancelOtp">Cancel</button>
+               </div>
+           </form>
+           <p class="resend-otp" id="resendOtp">Didn't receive OTP? Resend</p>
+           <p id="otpTimer" class="otp-message"></p>
+       </div>
+   </div>
+
+   <script>
+   document.addEventListener('DOMContentLoaded', () => {
+       // Handle Enter key navigation
+       const inputs = Array.from(document.querySelectorAll('input'));
+       inputs.forEach((input, index) => {
+           input.addEventListener('keydown', (event) => {
+               if (event.key === 'Enter') {
+                   event.preventDefault();
+                   const nextInput = inputs[index + 1];
+                   if (nextInput) {
+                       nextInput.focus();
+                   } else {
+                       document.querySelector('button[type="submit"]').focus();
+                   }
+               }
+           });
+       });
+
+       // OTP input auto-focus and navigation
+       const otpInputs = document.querySelectorAll('.otp-input input');
+       otpInputs.forEach((input, index) => {
+           // Auto-focus next input when a digit is entered
+           input.addEventListener('input', (e) => {
+               if (e.target.value.length === 1) {
+                   if (index < otpInputs.length - 1) {
+                       otpInputs[index + 1].focus();
+                   }
+               }
+           });
+
+           // Handle backspace to move to previous input
+           input.addEventListener('keydown', (e) => {
+               if (e.key === 'Backspace' && e.target.value.length === 0) {
+                   if (index > 0) {
+                       otpInputs[index - 1].focus();
+                   }
+               }
+           });
+       });
+
+       // Check if we need to show OTP verification (after password submission)
+       const urlParams = new URLSearchParams(window.location.search);
+       if (urlParams.get('otp') === 'true') {
+           showOtpVerification();
+       }
+
+       // Cancel OTP verification
+       document.getElementById('cancelOtp').addEventListener('click', () => {
+           document.getElementById('otpContainer').style.display = 'none';
+           document.getElementById('loginForm').style.display = 'block';
+       });
+
+       // Resend OTP
+       document.getElementById('resendOtp').addEventListener('click', () => {
+           // In a real implementation, this would call your backend to resend OTP
+           startTimer();
+           alert('New OTP has been sent to your email');
+       });
+   });
+
+   function showOtpVerification() {
+       document.getElementById('loginForm').style.display = 'none';
+       document.getElementById('otpContainer').style.display = 'block';
+       document.getElementById('username').value = new URLSearchParams(window.location.search).get('username');
+       startTimer();
+   }
+
+   function startTimer() {
+       let timeLeft = 300; // 5 minutes in seconds
+       const timerElement = document.getElementById('otpTimer');
+
+       const timer = setInterval(() => {
+           const minutes = Math.floor(timeLeft / 60);
+           const seconds = timeLeft % 60;
+
+           timerElement.textContent = `OTP expires in: ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+
+           if (timeLeft <= 0) {
+               clearInterval(timer);
+               timerElement.textContent = 'OTP has expired. Please login again.';
+               document.getElementById('resendOtp').style.display = 'block';
+           }
+
+           timeLeft--;
+       }, 1000);
+   }
+   </script>
+</body>
+</html>

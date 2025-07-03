@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Comparison</title>
+    <link rel="icon" href="{{ url_for('static',filename='logo.webp')}}">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background-image: url('https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&q=80');
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1;
+        }
+
+        .content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .comparison-modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1000;
+            width: 90%;
+            max-width: 800px;
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 999;
+        }
+
+        select:disabled {
+            background-color: #f3f4f6;
+            cursor: not-allowed;
+        }
+
+        .error-message {
+            color: red;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+            display: none;
+        }
+
+        .car-image {
+            min-height: 150px;
+            background-color: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center">
+    <div class="content w-full min-h-screen flex flex-col items-center justify-center p-8">
+        <!-- Back Button -->
+        <div style="position: absolute; top: 20px; right: 20px;">
+  <button onclick="window.location.href='{{ url_for('admin_dashboard') }}'"
+          style="padding: 10px 20px; margin-right: 10px; background-color: #1E90FF; color: white; border: none; border-radius: 8px; cursor: pointer;">
+    Back to Dashboard
+  </button>
+
+  <button onclick="window.location.href='{{ url_for('login') }}'"
+          style="padding: 10px 20px; background-color: #f04e4e; color: white; border: none; border-radius: 8px; cursor: pointer;">
+    Back to Login
+  </button>
+</div>
+
+        <h1 class="text-4xl font-bold text-white mb-8">Car Comparison</h1>
+
+        <div class="flex space-x-6 mb-8">
+            <!-- First Car Selector -->
+            <div class="bg-white p-6 rounded-lg shadow-md flex flex-col items-center space-y-4 w-72">
+                <p class="text-gray-600 font-medium">Add car</p>
+                <select class="border border-gray-300 rounded-md p-2 w-full bg-white" id="brand1" onchange="updateModels(1)">
+                    <option value="">Select Brand</option>
+                    <option value="Maruti">Maruti</option>
+                    <option value="Tata">Tata</option>
+                    <option value="Hyundai">Hyundai</option>
+                    <option value="Kia">Kia</option>
+                    <option value="Honda">Honda</option>
+                    <option value="Volkswagen">Volkswagen</option>
+                    <option value="Mahindra">Mahindra</option>
+                    <option value="Skoda">Skoda</option>
+                    <option value="MG">MG</option>
+                    <option value="Jeep">Jeep</option>
+                    <option value="Toyota">Toyota</option>
+                    <option value="Renault">Renault</option>
+                    <option value="BMW">BMW</option>
+                    <option value="Volvo">Volvo</option>
+                    <option value="Audi">Audi</option>
+                    <option value="Mercedes-Benz">Mercedes-Benz</option>
+                    <option value="Jaguar">Jaguar</option>
+                    <option value="Tesla">Tesla</option>
+                    <option value="Porsche">Porsche</option>
+                </select>
+                <select class="border border-gray-300 rounded-md p-2 w-full bg-white" id="model1" disabled>
+                    <option value="">Select Model</option>
+                </select>
+                <div class="error-message" id="error1">Please select a different model</div>
+            </div>
+
+            <!-- Second Car Selector -->
+            <div class="bg-white p-6 rounded-lg shadow-md flex flex-col items-center space-y-4 w-72">
+                <p class="text-gray-600 font-medium">Add car</p>
+                <select class="border border-gray-300 rounded-md p-2 w-full bg-white" id="brand2" onchange="updateModels(2)">
+                    <option value="">Select Brand</option>
+                    <option value="Maruti">Maruti</option>
+                    <option value="Tata">Tata</option>
+                    <option value="Hyundai">Hyundai</option>
+                    <option value="Kia">Kia</option>
+                    <option value="Honda">Honda</option>
+                    <option value="Volkswagen">Volkswagen</option>
+                    <option value="Mahindra">Mahindra</option>
+                    <option value="Skoda">Skoda</option>
+                    <option value="MG">MG</option>
+                    <option value="Jeep">Jeep</option>
+                    <option value="Toyota">Toyota</option>
+                    <option value="Renault">Renault</option>
+                    <option value="BMW">BMW</option>
+                    <option value="Volvo">Volvo</option>
+                    <option value="Audi">Audi</option>
+                    <option value="Mercedes-Benz">Mercedes-Benz</option>
+                    <option value="Jaguar">Jaguar</option>
+                    <option value="Tesla">Tesla</option>
+                    <option value="Porsche">Porsche</option>
+                </select>
+                <select class="border border-gray-300 rounded-md p-2 w-full bg-white" id="model2" disabled>
+                    <option value="">Select Model</option>
+                </select>
+                <div class="error-message" id="error2">Please select a different model</div>
+            </div>
+        </div>
+
+        <button onclick="compareCars()" id="compareButton" class="px-8 py-3 rounded-md shadow-md text-white font-medium text-lg bg-gray-400 cursor-not-allowed" disabled>
+            Compare Cars
+        </button>
+    </div>
+
+    <!-- Comparison Modal -->
+    <div class="modal-overlay" id="modalOverlay" onclick="closeModal()"></div>
+    <div class="comparison-modal bg-white rounded-lg shadow-xl" id="comparisonModal">
+        <div class="p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold">Car Comparison</h2>
+                <button onclick="closeModal()" class="text-gray-500 hover:text-gray-700">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <div class="grid grid-cols-3 gap-4">
+                <!-- Image Row -->
+                <div class="col-span-1 font-medium">Image</div>
+                <div class="col-span-1 flex justify-center">
+                    <div id="imgContainer1" class="car-image w-full max-w-48 rounded-lg shadow-md">
+                        <span>Image not available</span>
+                    </div>
+                </div>
+                <div class="col-span-1 flex justify-center">
+                    <div id="imgContainer2" class="car-image w-full max-w-48 rounded-lg shadow-md">
+                        <span>Image not available</span>
+                    </div>
+                </div>
+
+                <!-- Title Row -->
+                <div class="col-span-1 font-medium">Specification</div>
+                <div class="col-span-1 text-center font-medium" id="car1Title">Car 1</div>
+                <div class="col-span-1 text-center font-medium" id="car2Title">Car 2</div>
+
+                <!-- Price -->
+                <div class="col-span-1">Price</div>
+                <div class="col-span-1 text-center" id="price1">-</div>
+                <div class="col-span-1 text-center" id="price2">-</div>
+
+                <!-- Fuel Type -->
+                <div class="col-span-1">Fuel Type</div>
+                <div class="col-span-1 text-center" id="fuel1">-</div>
+                <div class="col-span-1 text-center" id="fuel2">-</div>
+
+                <!-- Vehicle Type -->
+                <div class="col-span-1">Vehicle Type</div>
+                <div class="col-span-1 text-center" id="type1">-</div>
+                <div class="col-span-1 text-center" id="type2">-</div>
+
+                <!-- Engine Capacity -->
+                <div class="col-span-1">Engine Capacity (cc)</div>
+                <div class="col-span-1 text-center" id="engine1">-</div>
+                <div class="col-span-1 text-center" id="engine2">-</div>
+
+                <!-- Mileage -->
+                <div class="col-span-1">Mileage (km/l)</div>
+                <div class="col-span-1 text-center" id="mileage1">-</div>
+                <div class="col-span-1 text-center" id="mileage2">-</div>
+
+                <!-- Seat Capacity -->
+                <div class="col-span-1">Seat Capacity</div>
+                <div class="col-span-1 text-center" id="seats1">-</div>
+                <div class="col-span-1 text-center" id="seats2">-</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Primary image URLs with fallback to generic images by type
+        const image_urls = {
+            'Maruti Swift': {
+                primary: "https://stimg.cardekho.com/images/carexteriorimages/930x620/Maruti/Swift/9226/1739945896166/front-left-side-47.jpg",
+                fallback: "https://stimg.cardekho.com/images/car-images/930x620/Maruti/Swift/9226/1677837169794/1.jpg"
+            },
+            'Tata Punch': {
+                primary: "https://stimg.cardekho.com/images/carexteriorimages/930x620/Tata/Punch/10681/1741328849839/exterior-image-164.jpg",
+                fallback: "https://stimg.cardekho.com/images/car-images/930x620/Tata/Punch/10681/1677837169794/1.jpg"
+            },
+            'Hyundai Grand i10 Nios': {
+                primary: "https://stimg.cardekho.com/images/carexteriorimages/930x620/Hyundai/Grand-i10-Nios/10096/1684298344769/front-left-side-47.jpg",
+                fallback: "https://stimg.cardekho.com/images/car-images/930x620/Hyundai/Grand-i10-Nios/10096/1677837169794/1.jpg"
+            },
+            'Maruti Wagon R': {
+                primary: "https://stimg.cardekho.com/images/carexteriorimages/630x420/Maruti/Wagon-R/10365/1687580655855/front-left-side-47.jpg?tr=w-664",
+                fallback: "https://stimg.cardekho.com/images/car-images/930x620/Maruti/Wagon-R/10365/1677837169794/1.jpg"
+            },
+            'Hyundai i20': {
+                primary: "https://stimg.cardekho.com/images/carexteriorimages/930x620/Hyundai/i20-N-Line/10285/1695370650350/front-left-side-47.jpg?imwidth=890&impolicy=resize",
+                fallback: "https://stimg.cardekho.com/images/car-images/930x620/Hyundai/i20/10285/1677837169794/1.jpg"
+            },
+            'Kia Sonet': {
+                primary: "https://stimg.cardekho.com/images/carexteriorimages/630x420/Kia/Sonet/9783/1705036728978/front-left-side-47.jpg?tr=w-664",
+                fallback: "https://stimg.cardekho.com/images/car-images/930x620/Kia/Sonet/9783/1677837169794/1.jpg"
+            },
+            'Honda Amaze': {
+                primary: "https://stimg.cardekho.com/images/carexteriorimages/930x620/Honda/Amaze/12185/1733724733157/front-left-side-47.jpg",
+                fallback: "https://stimg.cardekho.com/images/car-images/930x620/Honda/Amaze/12185/1677837169794/1.jpg"
+            },
+            'Volkswagen Polo': {
+                primary: "https://stimg.cardekho.com/images/carexteriorimages/930x620/Volkswagen/Polo/7743/1587972393986/front-left-side-47.jpg",
+                fallback: "https://stimg.cardekho.com/images/car-images/930x620/Volkswagen/Polo/7743/1677837169794/1.jpg"
+            },
+            'Mahindra XUV300': {
+                primary: "https://stimg.cardekho.com/images/carexteriorimages/630x420/Mahindra/XUV300/6794/1701855582193/front-left-side-47.jpg?tr=w-664",
+                fallback: "https://stimg.cardekho.com/images/car-images/930x620/Mahindra/XUV300/6794/1677837169794/1.jpg"
+            },
+            'Skoda Slavia': {
+                primary: "https://stimg.cardekho.com/images/carexteriorimages/630x420/Skoda/Slavia/11810/1718773567443/front-left-side-47.jpg?tr=w-664",
+                fallback: "https://stimg.cardekho.com/images/car-images/930x620/Skoda/Slavia/11810/1677837169794/1.jpg"
+            },
+            'MG Astor': {
+                primary: "https://stimg.cardekho.com/images/carexteriorimages/630x420/MG/Astor/11413/1719383205969/front-left-side-47.jpg?tr=w-664",
+                fallback: "https://stimg.cardekho.com/images/car-images/930x620/MG/Astor/11413/1677837169794/1.jpg"
+            },
+            'Hyundai Creta': {
+                primary: "https://stimg.cardekho.com/images/carexteriorimages/630x420/Hyundai/Creta/8667/1744607863052/front-left-side-47.jpg?tr=w-664",
+                fallback: "https://stimg.cardekho.com/images/car-images/930x620/Hyundai/Creta/8667/1677837169794/1.jpg"
+            },
+            'Maruti Grand Vitara': {
+                primary: "https://stimg.cardekho.com/images/carexteriorimages/630x420/Maruti/Grand-Vitara/10505/1689588262879/front-left-side-47.jpg?tr=w-664",
+                fallback: "https://stimg.cardekho.com/images/car-images/930x620/Maruti/Grand-Vitara/10505/1677837169794/1.jpg"
+            },
+            'Tata Harrier': {
+                primary: "https://stimg.cardekho.com/images/carexteriorimages/630x420/Tata/Harrier/9368/1697532960290/front-left-side-47.jpg?tr=w-664",
+                fallback: "https://stimg.cardekho.com/images/car-images/930x620/Tata/Harrier/9368/1677837169794/1.jpg"
+            },
+            'Toyota Innova': {
+                primary: "https://stimg.cardekho.com/images/carexteriorimages/630x420/Toyota/Innova-Crysta/9612/1697698611076/front-left-side-47.jpg?tr=w-664",
+                fallback: "https://stimg.cardekho.com/images/car-images/930x620/Toyota/Innova-Crysta/9612/1677837169794/1.jpg"
+            },
+            'Jeep Compass': {
+                primary: "https://stimg.cardekho.com/images/carexteriorimages/630x420/Jeep/Compass/12456/1742274156288/front-left-side-47.jpg?tr=w-664",
+                fallback: "https://stimg.cardekho.com/images/car-images/930x620/Jeep/Compass/12456/1677837169794/1.jpg"
+            },
+            'Hyundai Tucson': {
+                primary: "https://stimg.cardekho.com/images/carexteriorimages/630x420/Hyundai/Tucson/10134/1694668706095/front-left-side-47.jpg?tr=w-664",
+                fallback: "https://stimg.cardekho.com/images/car-images/930x620/Hyundai/Tucson/10134/1677837169794/1.jpg"
+            },
+            'Volkswagen Tiguan': {
+                primary: "https://stimg.cardekho.com/images/carexteriorimages/630x420/Volkswagen/Tiguan-R-Line/10287/1744626210680/front-left-side-47.jpg?tr=w-664",
+                fallback: "https://stimg.cardekho.com/images/car-images/930x620/Volkswagen/Tiguan/10287/1677837169794/1.jpg"
+            },
+            'Skoda Kodiaq': {
+                primary: "https://stimg.cardekho.com/images/carexteriorimages/630x420/Skoda/Kodiaq-2025/9930/1744190120030/front-left-side-47.jpg?tr=w-664",
+                fallback: "https://stimg.cardekho.com/images/car-images/930x620/Skoda/Kodiaq/9930/1677837169794/1.jpg"
+            },
+            'BMW X1': {
+                primary: "https://stimg.cardekho.com/images/carexteriorimages/630x420/BMW/X1/10064/1683261436040/front-left-side-47.jpg?tr=w-664",
+                fallback: "https://stimg.cardekho.com/images/car-images/930x620/BMW/X1/10064/1677837169794/1.jpg"
+            },
+            'Volvo XC60': {
+                primary: "https://stimg.cardekho.com/images/carexteriorimages/630x420/Volvo/XC60/10589/1692870711844/front-left-side-47.jpg?tr=w-664",
+                fallback: "https://stimg.cardekho.com/images/car-images/930x620/Volvo/XC60/10589/1677837169794/1.jpg"
+            },
+            'Audi Q3': {
+                primary: "https://stimg.cardekho.com/images/carexteriorimages/630x420/Audi/Q3/11363/1708935637129/front-left-side-47.jpg?tr=w-664",
+                fallback: "https://stimg.cardekho.com/images/car-images/930x620/Audi/Q3/11363/1677837169794/1.jpg"
+            },
+            'Mercedes-Benz GLA': {
+                primary: "https://stimg.cardekho.com/images/carexteriorimages/630x420/Mercedes-Benz/GLA-2024/9731/1679039244149/front-left-side-47.jpg?tr=w-664",
+                fallback: "https://stimg.cardekho.com/images/car-images/930x620/Mercedes-Benz/GLA/9731/1677837169794/1.jpg"
+            },
+            'Jaguar XE': {
+                primary: "https://stimg.cardekho.com/images/carexteriorimages/630x420/Jaguar/XE/6836/1578638648168/front-left-side-47.jpg?tr=w-664",
+                fallback: "https://stimg.cardekho.com/images/car-images/930x620/Jaguar/XE/6836/1677837169794/1.jpg"
+            },
+            'Mercedes-Benz E-Class': {
+                primary: "https://stimg.cardekho.com/images/carexteriorimages/630x420/Mercedes-Benz/E-Class/9790/1728652931654/front-left-side-47.jpg?tr=w-664",
+                fallback: "https://stimg.cardekho.com/images/car-images/930x620/Mercedes-Benz/E-Class/9790/1677837169794/1.jpg"
+            },
+            'BMW 5 Series': {
+                primary: "https://stimg.cardekho.com/images/carexteriorimages/630x420/BMW/5-Series-2024/10182/1685002609273/front-left-side-47.jpg?tr=w-664",
+                fallback: "https://stimg.cardekho.com/images/car-images/930x620/BMW/5-Series/10182/1677837169794/1.jpg"
+            },
+            'Audi A6': {
+                primary: "https://stimg.cardekho.com/images/carexteriorimages/630x420/Audi/A6/10552/1708935437947/front-left-side-47.jpg?tr=w-664",
+                fallback: "https://stimg.cardekho.com/images/car-images/930x620/Audi/A6/10552/1677837169794/1.jpg"
+            },
+            'Tesla Model Y': {
+                primary: "https://stimg.cardekho.com/images/carexteriorimages/630x420/Tesla/Tesla-Model-Y/6396/1552894185017/front-left-side-47.jpg?tr=w-664",
+                fallback: "https://stimg.cardekho.com/images/car-images/930x620/Tesla/Model-Y/6396/1677837169794/1.jpg"
+            },
+            'Porsche Taycan': {
+                primary: "https://stimg.cardekho.com/images/carexteriorimages/630x420/Porsche/Taycan-2024/11515/1707404051019/front-left-side-47.jpg?tr=w-664",
+                fallback: "https://stimg.cardekho.com/images/car-images/930x620/Porsche/Taycan/11515/1677837169794/1.jpg"
+            },
+            'Renault Kwid': {
+                primary: "https://stimg.cardekho.com/images/carexteriorimages/630x420/Renault/KWID/10076/1739594964186/front-left-side-47.jpg?tr=w-664",
+                fallback: "https://stimg.cardekho.com/images/car-images/930x620/Renault/Kwid/10679/1677837169794/1.jpg"
+            }
+        };
+
+        // Generic fallback images by vehicle type
+        const generic_images = {
+            'Hatchback': 'https://stimg.cardekho.com/images/car-images/generic/hatchback.jpg',
+            'Sedan': 'https://stimg.cardekho.com/images/car-images/generic/sedan.jpg',
+            'SUV': 'https://stimg.cardekho.com/images/car-images/generic/suv.jpg',
+            'MUV': 'https://stimg.cardekho.com/images/car-images/generic/muv.jpg',
+            'Luxury': 'https://stimg.cardekho.com/images/car-images/generic/luxury.jpg',
+            'Electric': 'https://stimg.cardekho.com/images/car-images/generic/electric.jpg'
+        };
+
+        const carData = {
+            'Maruti': ['Swift', 'Wagon R', 'Grand Vitara'],
+            'Tata': ['Punch', 'Harrier'],
+            'Hyundai': ['Grand i10 Nios', 'i20', 'Creta', 'Tucson'],
+            'Kia': ['Sonet'],
+            'Honda': ['Amaze'],
+            'Volkswagen': ['Polo', 'Tiguan'],
+            'Mahindra': ['XUV300'],
+            'Skoda': ['Slavia', 'Kodiaq'],
+            'MG': ['Astor'],
+            'Jeep': ['Compass'],
+            'Toyota': ['Innova'],
+            'Renault': ['Kwid'],
+            'BMW': ['X1', '5 Series'],
+            'Volvo': ['XC60'],
+            'Audi': ['Q3', 'A6'],
+            'Mercedes-Benz': ['GLA', 'E-Class'],
+            'Jaguar': ['XE'],
+            'Tesla': ['Model Y'],
+            'Porsche': ['Taycan']
+        };
+
+        const carSpecs = {
+    'Maruti': {
+        'Swift': { price: '₹8.00 L', fuel: 'Petrol', type: 'Hatchback', mileage: '22 km/l', engine_power: '1197 cc', seat_capacity: 5 },
+        'Wagon R': { price: '₹6.70 L', fuel: 'Petrol', type: 'Hatchback', mileage: '23 km/l', engine_power: '998 cc', seat_capacity: 5 },
+        'Grand Vitara': { price: '₹18.00 L', fuel: 'Petrol', type: 'SUV', mileage: '20 km/l', engine_power: '1462 cc', seat_capacity: 5 }
+    },
+    'Tata': {
+        'Punch': { price: '₹9.00 L', fuel: 'Petrol', type: 'SUV', mileage: '19 km/l', engine_power: '1199 cc', seat_capacity: 5 },
+        'Harrier': { price: '₹19.00 L', fuel: 'Diesel', type: 'SUV', mileage: '16 km/l', engine_power: '1956 cc', seat_capacity: 5 }
+    },
+    'Hyundai': {
+        'Grand i10 Nios': { price: '₹7.00 L', fuel: 'Petrol', type: 'Hatchback', mileage: '20 km/l', engine_power: '1197 cc', seat_capacity: 5 },
+        'i20': { price: '₹12.00 L', fuel: 'Petrol', type: 'Hatchback', mileage: '20 km/l', engine_power: '1197 cc', seat_capacity: 5 },
+        'Creta': { price: '₹15.00 L', fuel: 'Petrol', type: 'SUV', mileage: '17 km/l', engine_power: '1497 cc', seat_capacity: 5 },
+        'Tucson': { price: '₹29.00 L', fuel: 'Petrol', type: 'SUV', mileage: '14 km/l', engine_power: '2199 cc', seat_capacity: 5 }
+    },
+    'Kia': {
+        'Sonet': { price: '₹13.00 L', fuel: 'Diesel', type: 'SUV', mileage: '18 km/l', engine_power: '1493 cc', seat_capacity: 5 }
+    },
+    'Honda': {
+        'Amaze': { price: '₹11.00 L', fuel: 'Petrol', type: 'Sedan', mileage: '18 km/l', engine_power: '1199 cc', seat_capacity: 5 }
+    },
+    'Renault': {
+        'Kwid': { price: '₹5.50 L', fuel: 'Petrol', type: 'Hatchback', mileage: '21 km/l', engine_power: '999 cc', seat_capacity: 5 }
+    },
+    'Volkswagen': {
+        'Polo': { price: '₹10.00 L', fuel: 'Petrol', type: 'Hatchback', mileage: '19 km/l', engine_power: '999 cc', seat_capacity: 5 },
+        'Tiguan': { price: '₹27.00 L', fuel: 'Petrol', type: 'SUV', mileage: '13 km/l', engine_power: '1984 cc', seat_capacity: 5 }
+    },
+    'Skoda': {
+        'Slavia': { price: '₹17.00 L', fuel: 'Petrol', type: 'Sedan', mileage: '19 km/l', engine_power: '1498 cc', seat_capacity: 5 },
+        'Kodiaq': { price: '₹30.00 L', fuel: 'Petrol', type: 'SUV', mileage: '12 km/l', engine_power: '1984 cc', seat_capacity: 7 }
+    },
+    'MG': {
+        'Astor': { price: '₹16.00 L', fuel: 'Petrol', type: 'SUV', mileage: '15 km/l', engine_power: '1349 cc', seat_capacity: 5 }
+    },
+    'Jeep': {
+        'Compass': { price: '₹28.00 L', fuel: 'Diesel', type: 'SUV', mileage: '16 km/l', engine_power: '1956 cc', seat_capacity: 5 }
+    },
+    'Toyota': {
+        'Innova': { price: '₹26.00 L', fuel: 'Diesel', type: 'MUV', mileage: '15 km/l', engine_power: '2393 cc', seat_capacity: 7 }
+    },
+    'Mahindra': {
+        'XUV300': { price: '₹14.00 L', fuel: 'Diesel', type: 'SUV', mileage: '20 km/l', engine_power: '1497 cc', seat_capacity: 5 }
+    },
+    'BMW': {
+        'X1': { price: '₹45.00 L', fuel: 'Diesel', type: 'SUV', mileage: '20 km/l', engine_power: '1995 cc', seat_capacity: 5 },
+        '5 Series': { price: '₹78.00 L', fuel: 'Diesel', type: 'Luxury', mileage: '14 km/l', engine_power: '1995 cc', seat_capacity: 5 }
+    },
+    'Volvo': {
+        'XC60': { price: '₹50.00 L', fuel: 'Petrol', type: 'SUV', mileage: '12 km/l', engine_power: '1969 cc', seat_capacity: 5 }
+    },
+    'Audi': {
+        'Q3': { price: '₹48.00 L', fuel: 'Petrol', type: 'SUV', mileage: '14 km/l', engine_power: '1984 cc', seat_capacity: 5 },
+        'A6': { price: '₹73.00 L', fuel: 'Petrol', type: 'Luxury', mileage: '12 km/l', engine_power: '1984 cc', seat_capacity: 5 }
+    },
+    'Mercedes-Benz': {
+        'GLA': { price: '₹49.00 L', fuel: 'Petrol', type: 'Luxury', mileage: '13 km/l', engine_power: '1332 cc', seat_capacity: 5 },
+        'E-Class': { price: '₹72.00 L', fuel: 'Petrol', type: 'Luxury', mileage: '13 km/l', engine_power: '1991 cc', seat_capacity: 5 }
+    },
+    'Jaguar': {
+        'XE': { price: '₹47.00 L', fuel: 'Petrol', type: 'Sedan', mileage: '12 km/l', engine_power: '1997 cc', seat_capacity: 5 }
+    },
+    'Tesla': {
+        'Model Y': { price: '₹75.00 L', fuel: 'Electric', type: 'SUV', mileage: '525 km/full charge', engine_power: 'Electric', seat_capacity: 5 }
+    },
+    'Porsche': {
+        'Taycan': { price: '₹160.00 L', fuel: 'Electric', type: 'Luxury', mileage: '480 km/full charge', engine_power: 'Electric', seat_capacity: 4 }
+    }
+};
+
+        function updateModels(selectorNum) {
+            const brandSelect = document.getElementById(`brand${selectorNum}`);
+            const modelSelect = document.getElementById(`model${selectorNum}`);
+            const selectedBrand = brandSelect.value;
+
+            modelSelect.innerHTML = '<option value="">Select Model</option>';
+            modelSelect.disabled = !selectedBrand;
+
+            if (selectedBrand) {
+                carData[selectedBrand].forEach(model => {
+                    const option = document.createElement('option');
+                    option.value = model;
+                    option.textContent = model;
+                    modelSelect.appendChild(option);
+                });
+            }
+
+            updateCompareButton();
+        }
+
+        function updateCompareButton() {
+            const brand1 = document.getElementById('brand1').value;
+            const model1 = document.getElementById('model1').value;
+            const brand2 = document.getElementById('brand2').value;
+            const model2 = document.getElementById('model2').value;
+
+            const compareButton = document.getElementById('compareButton');
+            const error1 = document.getElementById('error1');
+            const error2 = document.getElementById('error2');
+
+            // Check if both cars are selected and they are the same
+            const sameCarSelected = brand1 && model1 && brand2 && model2 &&
+                                  brand1 === brand2 && model1 === model2;
+
+            if (sameCarSelected) {
+                error1.style.display = 'block';
+                error2.style.display = 'block';
+                compareButton.disabled = true;
+                compareButton.className = 'px-8 py-3 rounded-md shadow-md text-white font-medium text-lg bg-gray-400 cursor-not-allowed';
+                return;
+            } else {
+                error1.style.display = 'none';
+                error2.style.display = 'none';
+            }
+
+            const canCompare = brand1 && model1 && brand2 && model2 && !sameCarSelected;
+
+            compareButton.disabled = !canCompare;
+            compareButton.className = `px-8 py-3 rounded-md shadow-md text-white font-medium text-lg ${
+                canCompare
+                    ? 'bg-green-500 hover:bg-green-600 cursor-pointer'
+                    : 'bg-gray-400 cursor-not-allowed'
+            }`;
+        }
+
+        function loadImageWithFallback(containerId, brand, model) {
+            const fullName = `${brand} ${model}`;
+            const container = document.getElementById(containerId);
+            container.innerHTML = ''; // Clear previous content
+
+            if (image_urls[fullName]) {
+                const img = document.createElement('img');
+                img.className = 'w-full max-w-48 h-auto rounded-lg shadow-md';
+                img.alt = fullName;
+
+                // Try primary image first
+                img.src = image_urls[fullName].primary;
+                img.onerror = function() {
+                    // If primary fails, try fallback
+                    this.src = image_urls[fullName].fallback;
+                    this.onerror = function() {
+                        // If both fail, use generic image by type
+                        const carType = carSpecs[brand][model].type;
+                        this.src = generic_images[carType] || generic_images['Sedan'];
+                    };
+                };
+
+                container.appendChild(img);
+            } else {
+                // No specific image available, use generic by type
+                const carType = carSpecs[brand][model].type;
+                const img = document.createElement('img');
+                img.className = 'w-full max-w-48 h-auto rounded-lg shadow-md';
+                img.alt = fullName;
+                img.src = generic_images[carType] || generic_images['Sedan'];
+                container.appendChild(img);
+            }
+        }
+
+        function compareCars() {
+          const car1 = {
+            brand: document.getElementById('brand1').value,
+            model: document.getElementById('model1').value
+          };
+          const car2 = {
+            brand: document.getElementById('brand2').value,
+            model: document.getElementById('model2').value
+          };
+
+// Don't proceed if both cars are the same
+          if (car1.brand === car2.brand && car1.model === car2.model) {
+            return;
+          }
+
+          const specs1 = carSpecs[car1.brand][car1.model];
+          const specs2 = carSpecs[car2.brand][car2.model];
+
+// Set car titles
+          document.getElementById('car1Title').textContent = `${car1.brand} ${car1.model}`;
+          document.getElementById('car2Title').textContent = `${car2.brand} ${car2.model}`;
+
+// Load images with fallback handling
+          loadImageWithFallback('imgContainer1', car1.brand, car1.model);
+          loadImageWithFallback('imgContainer2', car2.brand, car2.model);
+
+// Set specifications
+          document.getElementById('price1').textContent = specs1.price;
+          document.getElementById('price2').textContent = specs2.price;
+          document.getElementById('fuel1').textContent = specs1.fuel;
+          document.getElementById('fuel2').textContent = specs2.fuel;
+          document.getElementById('type1').textContent = specs1.type;
+          document.getElementById('type2').textContent = specs2.type;
+          document.getElementById('mileage1').textContent = specs1.mileage;
+          document.getElementById('mileage2').textContent = specs2.mileage;
+
+// ✅ Add engine power (cc)
+          document.getElementById('engine1').textContent = specs1.engine_power ;
+          document.getElementById('engine2').textContent = specs2.engine_power ;
+
+          document.getElementById('seats1').textContent = specs1.seat_capacity;
+          document.getElementById('seats2').textContent = specs2.seat_capacity;
+
+          document.getElementById('modalOverlay').style.display = 'block';
+          document.getElementById('comparisonModal').style.display = 'block';
+        }
+         function closeModal() {
+            document.getElementById('modalOverlay').style.display = 'none';
+            document.getElementById('comparisonModal').style.display = 'none';
+        }
+
+        document.getElementById('model1').addEventListener('change', updateCompareButton);
+        document.getElementById('model2').addEventListener('change', updateCompareButton);
+    </script>
+</body>
+</html>

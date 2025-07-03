@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sales Graph</title>
+  <style>
+    body {
+      background-image: url('{{ url_for('static', filename='s-img.jpg') }}');
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center;
+      font-family: cursive;
+      text-align: center;
+      padding: 40px;
+      color: #333;
+    }
+
+    .graph-box {
+      background-color: rgba(255, 255, 255, 0.95);
+      padding: 30px;
+      border-radius: 12px;
+      display: inline-block;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      max-width: 850px;
+      width: 100%;
+    }
+
+    h2 {
+      margin-bottom: 20px;
+    }
+
+    img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px;
+      margin-top: 20px;
+    }
+
+    .button {
+      display: inline-block;
+      margin-top: 30px;
+      padding: 10px 20px;
+      background-color: #1E90FF;
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: bold;
+      transition: background-color 0.3s ease;
+    }
+
+    .button:hover {
+      background-color: #0f70c9;
+    }
+  </style>
+</head>
+<body>
+  <div class="graph-box">
+    {% if no_data %}
+      <h2>No sales data available for "{{ car_model }}"</h2>
+    {% else %}
+      <h2>Sales Forecast for "{{ car_model }}"</h2>
+      <img src="{{ graph_url }}" alt="Sales Forecast Line Graph">
+      <h2 style="margin-top: 40px;">Sales by City</h2>
+      <img src="{{ bar_url }}" alt="Sales by City Bar Graph">
+    {% endif %}
+    <br>
+    <a href="{{ url_for('sales') }}" class="button">Back</a>
+  </div>
+</body>
+</html>

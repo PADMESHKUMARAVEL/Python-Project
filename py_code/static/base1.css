@@ -1,0 +1,26 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+}
+
+body {
+    background-image: url("/static/car2.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center center;
+    background-attachment: fixed;
+
+    font-family: cursive;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+.sbtn {
+    display: flex;
+    flex-direction: row; /* or column for vertical stacking */
+    gap: 30px;
+}

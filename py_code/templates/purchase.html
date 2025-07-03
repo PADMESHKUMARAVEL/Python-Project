@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Car Finder</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+    body {
+  font-family: 'Roboto', sans-serif;
+  background-image: url("{{ url_for('static', filename='carback.jpg') }}");
+}
+    .gradient-text {
+      background: linear-gradient(90deg, #FFD700, #ADFF2F, #00FF00, #00CED1, #1E90FF);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+  </style>
+  <script>
+    function searchCar() {
+      const budget = document.getElementById('budget').value;
+      const fuelType = document.getElementById('fuelType').value;
+      const carBrand = document.getElementById('carBrand').value;
+      const carList = document.getElementById('carList').children;
+
+      let minPrice = 0;
+      let maxPrice = Infinity;
+
+      switch (budget) {
+        case '5-10 lakh': minPrice = 500000; maxPrice = 1000000; break;
+        case '10-15 lakh': minPrice = 1000000; maxPrice = 1500000; break;
+        case '15-20 lakh': minPrice = 1500000; maxPrice = 2000000; break;
+        case '20-30 lakh': minPrice = 2000000; maxPrice = 3000000; break;
+        case '30-50 lakh': minPrice = 3000000; maxPrice = 5000000; break;
+        case '50+ lakh': minPrice = 5000000; maxPrice = Infinity; break;
+      }
+
+      for (let car of carList) {
+        const priceText = car.querySelector('p').innerText;
+        const price = parseInt(priceText.replace('Price: ', '').replace(' lakh', '')) * 100000;
+        const carFuel = car.getAttribute('data-fuel');
+        const carBrandData = car.getAttribute('data-brand');
+
+        if (price >= minPrice && price <= maxPrice &&
+            (fuelType === 'all' || carFuel === fuelType) &&
+            (carBrand === 'all' || carBrandData === carBrand)) {
+          car.style.display = 'flex';
+        } else {
+          car.style.display = 'none';
+        }
+      }
+    }
+
+    function handleBuy(carId) {
+      window.location.href = `/purchase/${carId}`;
+    }
+  </script>
+</head>
+<body class="flex flex-col items-center justify-center min-h-screen bg-gray-100 pt-20">
+ <<div style="position: absolute; top: 20px; right: 20px;">
+  {% if session.logged_in and session.username == 'Admin' %}
+    <button onclick="window.location.href='{{ url_for('admin_dashboard') }}'"
+            style="padding: 10px 20px; margin-right: 10px; background-color: #1E90FF; color: white; border: none; border-radius: 8px; cursor: pointer;">
+      Back to Dashboard
+    </button>
+  {% endif %}
+  <button onclick="window.location.href='{{ url_for('login') }}'"
+          style="padding: 10px 20px; background-color: #f04e4e; color: white; border: none; border-radius: 8px; cursor: pointer;">
+    Back to Login
+  </button>
+</div>
+  <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-md mb-10">
+    <h1 class="text-center text-2xl font-bold gradient-text mb-6">Find your car</h1>
+
+    <select class="w-full p-2 mb-4 border border-gray-300 rounded-lg" id="carBrand" onchange="searchCar()">
+      <option value="all">All Brands</option>
+      <option value="maruti suzuki">Maruti Suzuki</option>
+      <option value="tata">Tata</option>
+      <option value="renault">Renault</option>
+      <option value="hyundai">Hyundai</option>
+      <option value="kia">Kia</option>
+      <option value="honda">Honda</option>
+      <option value="volkswagen">Volkswagen</option>
+      <option value="mahindra">Mahindra</option>
+      <option value="skoda">Skoda</option>
+      <option value="mg">MG</option>
+      <option value="toyota">Toyota</option>
+      <option value="jeep">Jeep</option>
+      <option value="bmw">BMW</option>
+      <option value="volvo">Volvo</option>
+      <option value="audi">Audi</option>
+      <option value="mercedes-benz">Mercedes-Benz</option>
+      <option value="jaguar">Jaguar</option>
+      <option value="tesla">Tesla</option>
+      <option value="porsche">Porsche</option>
+    </select>
+
+    <select class="w-full p-2 mb-4 border border-gray-300 rounded-lg" id="budget" onchange="searchCar()">
+      <option value="">Select Budget</option>
+      <option value="5-10 lakh">5-10 lakh</option>
+      <option value="10-15 lakh">10-15 lakh</option>
+      <option value="15-20 lakh">15-20 lakh</option>
+      <option value="20-30 lakh">20-30 lakh</option>
+      <option value="30-50 lakh">30-50 lakh</option>
+      <option value="50+ lakh">50+ lakh</option>
+    </select>
+
+    <select class="w-full p-2 mb-4 border border-gray-300 rounded-lg" id="fuelType" onchange="searchCar()">
+      <option value="all">Fuel type</option>
+      <option value="petrol">Petrol</option>
+      <option value="diesel">Diesel</option>
+      <option value="electric">Electric</option>
+    </select>
+  </div>
+
+  <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-6xl mt-6">
+    <h2 class="text-xl font-bold mb-4">Featured Cars</h2>
+    {% set image_urls = {
+    1: "https://stimg.cardekho.com/images/carexteriorimages/930x620/Maruti/Swift/9226/1739945896166/front-left-side-47.jpg",
+    2: "https://stimg.cardekho.com/images/carexteriorimages/930x620/Tata/Punch/10681/1741328849839/exterior-image-164.jpg",
+    3: "https://stimg.cardekho.com/images/carexteriorimages/630x420/Renault/KWID/10076/1739594964186/front-left-side-47.jpg?tr=w-664",
+    4: "https://stimg.cardekho.com/images/carexteriorimages/930x620/Hyundai/Grand-i10-Nios/10096/1684298344769/front-left-side-47.jpg",
+    5: "https://stimg.cardekho.com/images/carexteriorimages/630x420/Maruti/Wagon-R/10365/1687580655855/front-left-side-47.jpg?tr=w-664",
+    6: "https://stimg.cardekho.com/images/carexteriorimages/930x620/Hyundai/i20-N-Line/10285/1695370650350/front-left-side-47.jpg?imwidth=890&impolicy=resize",
+    7: "https://stimg.cardekho.com/images/carexteriorimages/630x420/Kia/Sonet/9783/1705036728978/front-left-side-47.jpg?tr=w-664",
+    8: "https://stimg.cardekho.com/images/carexteriorimages/930x620/Honda/Amaze/12185/1733724733157/front-left-side-47.jpg",
+    9: "https://stimg.cardekho.com/images/carexteriorimages/930x620/Volkswagen/Polo/7743/1587972393986/front-left-side-47.jpg",
+    10: "https://stimg.cardekho.com/images/carexteriorimages/630x420/Mahindra/XUV300/6794/1701855582193/front-left-side-47.jpg?tr=w-664",
+    11: "https://stimg.cardekho.com/images/carexteriorimages/630x420/Skoda/Slavia/11810/1718773567443/front-left-side-47.jpg?tr=w-664",
+    12: "https://stimg.cardekho.com/images/carexteriorimages/630x420/MG/Astor/11413/1719383205969/front-left-side-47.jpg?tr=w-664",
+    13: "https://stimg.cardekho.com/images/carexteriorimages/630x420/Hyundai/Creta/8667/1744607863052/front-left-side-47.jpg?tr=w-664",
+    14: "https://stimg.cardekho.com/images/carexteriorimages/630x420/Maruti/Grand-Vitara/10505/1689588262879/front-left-side-47.jpg?tr=w-664",
+    15: "https://stimg.cardekho.com/images/carexteriorimages/630x420/Tata/Harrier/9368/1697532960290/front-left-side-47.jpg?tr=w-664",
+    16: "https://stimg.cardekho.com/images/carexteriorimages/630x420/Toyota/Innova-Crysta/9612/1697698611076/front-left-side-47.jpg?tr=w-664",
+    17: "https://stimg.cardekho.com/images/carexteriorimages/630x420/Jeep/Compass/12456/1742274156288/front-left-side-47.jpg?tr=w-664",
+    18: "https://stimg.cardekho.com/images/carexteriorimages/630x420/Hyundai/Tucson/10134/1694668706095/front-left-side-47.jpg?tr=w-664",
+    19: "https://stimg.cardekho.com/images/carexteriorimages/630x420/Volkswagen/Tiguan-R-Line/10287/1744626210680/front-left-side-47.jpg?tr=w-664",
+    20: "https://stimg.cardekho.com/images/carexteriorimages/630x420/Skoda/Kodiaq-2025/9930/1744190120030/front-left-side-47.jpg?tr=w-664",
+    21: "https://stimg.cardekho.com/images/carexteriorimages/630x420/BMW/X1/10064/1683261436040/front-left-side-47.jpg?tr=w-664",
+    22: "https://stimg.cardekho.com/images/carexteriorimages/630x420/Volvo/XC60/10589/1692870711844/front-left-side-47.jpg?tr=w-664",
+    23: "https://stimg.cardekho.com/images/carexteriorimages/630x420/Audi/Q3/11363/1708935637129/front-left-side-47.jpg?tr=w-664",
+    24: "https://stimg.cardekho.com/images/carexteriorimages/630x420/Mercedes-Benz/GLA-2024/9731/1679039244149/front-left-side-47.jpg?tr=w-664",
+    25: "https://stimg.cardekho.com/images/carexteriorimages/630x420/Jaguar/XE/6836/1578638648168/front-left-side-47.jpg?tr=w-664",
+    26: "https://stimg.cardekho.com/images/carexteriorimages/630x420/Mercedes-Benz/E-Class/9790/1728652931654/front-left-side-47.jpg?tr=w-664",
+    27: "https://stimg.cardekho.com/images/carexteriorimages/630x420/BMW/5-Series-2024/10182/1685002609273/front-left-side-47.jpg?tr=w-664",
+    28: "https://stimg.cardekho.com/images/carexteriorimages/630x420/Audi/A6/10552/1708935437947/front-left-side-47.jpg?tr=w-664",
+    29: "https://stimg.cardekho.com/images/carexteriorimages/630x420/Tesla/Tesla-Model-Y/6396/1552894185017/front-left-side-47.jpg?tr=w-664",
+    30: "https://stimg.cardekho.com/images/carexteriorimages/630x420/Porsche/Taycan-2024/11515/1707404051019/front-left-side-47.jpg?tr=w-664"
+} %}
+    <div class="space-y-4" id="carList">
+      {% for car in cars %}
+      <div class="flex items-center p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow" data-brand="{{ car.car_name | lower }}" data-fuel="{{ car.fuel | lower }}">
+        <img src="{{ image_urls[car.car_id] }}" alt="{{ car.car_name }} {{ car.car_model }}" class="w-64 h-40 rounded-lg mr-6 object-cover" />
+        <div class="flex-grow">
+          <h3 class="text-lg font-semibold">{{ car.car_name }} {{ car.car_model }}</h3>
+          <p class="text-gray-600">Price: {{ car.price // 100000 }} lakh</p>
+          <p class="text-gray-600">Fuel: {{ car.fuel }}</p>
+        </div>
+        <button onclick="handleBuy('{{ car.car_id }}')" class="bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600 transition-colors ml-4">Buy</button>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</body>
+</html>

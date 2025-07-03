@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sales Graph</title>
+  <style>
+    body {
+      background-image: url('{{ url_for('static', filename='s-img.jpg') }}');
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center;
+      font-family: cursive;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      position: relative;
+    }
+
+    .box {
+      background: rgba(255,255,255,0.95);
+      padding: 30px;
+      border-radius: 10px;
+      text-align: center;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+
+    select, button {
+      padding: 10px;
+      margin-top: 10px;
+      width: 250px;
+      border-radius: 8px;
+    }
+
+    button[type="submit"] {
+      background-color: #1E90FF;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    button[type="submit"]:hover {
+      background-color: #0f70c9;
+    }
+
+    .login-button {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      padding: 10px 20px;
+      background-color: #f04e4e;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: cursive;
+      font-weight: bold;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .login-button:hover {
+      background-color: #d03434;
+    }
+  </style>
+</head>
+<body>
+ <div style="position: absolute; top: 20px; right: 20px;">
+  <a href="{{ url_for('admin_dashboard') }}"
+     style="padding: 10px 20px; margin-right: 10px; background-color: #1E90FF; color: white; border: none; border-radius: 8px; text-decoration: none; font-family: cursive; font-weight: bold;">
+    Back to Dashboard
+  </a>
+
+  <a href="{{ url_for('login') }}"
+     style="padding: 10px 20px; background-color: #f04e4e; color: white; border: none; border-radius: 8px; text-decoration: none; font-family: cursive; font-weight: bold;">
+    Back to Login
+  </a>
+</div>
+  <div class="box">
+    <h2>Select Car Brand & Model to View Sales Graph</h2>
+    <form method="POST">
+      <select name="car_brand" required onchange="this.form.submit()">
+        <option value="" disabled {% if not selected_brand %}selected{% endif %}>Select a car brand</option>
+        {% for brand in brands %}
+          <option value="{{ brand }}" {% if brand == selected_brand %}selected{% endif %}>{{ brand }}</option>
+        {% endfor %}
+      </select><br>
+
+      <select name="car_model" required {% if not models %}disabled{% endif %}>
+        <option value="" disabled selected>Select a car model</option>
+        {% for model in models %}
+          <option value="{{ model }}">{{ model }}</option>
+        {% endfor %}
+      </select><br>
+
+      <button type="submit">Generate Graph</button>
+    </form>
+  </div>
+</body>
+</html>

@@ -1,0 +1,71 @@
+body {
+background-image: url("/static/freepik__upload__30994.png");
+    background-size: cover;
+    background-position: center center;
+    background-attachment: fixed;
+    font-family: cursive;
+    height: 100vh; 
+    margin: 0; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+.Login
+{
+    width: 500px;
+    max-width: 90%;
+    background-color: rgba(0,0,0,.5);
+    padding: 20px 30px;
+   margin-left: 850px;
+   margin-right: 100px;
+   color:white ;
+   font-size: 20px;
+   border-radius: 15px;
+}
+.Login h2{
+    color: whitesmoke;
+    text-align: center;
+}
+.Login label
+{
+    display: block;
+}
+.ip input{
+    width: 98%;
+    font-size: 1.2em;
+    border: 1px solid green;
+    border-radius: 15px;
+    padding: 5px 10px;
+    box-sizing: border-box;
+
+}
+.ip1 input{
+    width: 98%;
+    font-size: 1.2em;
+    border: 1px solid green;
+    border-radius: 15px;
+    padding: 5px 10px;
+    box-sizing: border-box;
+}
+.sbtn
+{
+    text-align: center;
+}
+button
+{
+    background-color:skyblue;
+    font-size: 1.2em;
+    color:white;
+    padding: 5px 8px;
+    border-radius: 15px;
+    border: none;
+    cursor: pointer;
+}
+body::-webkit-scrollbar {
+    display: none;
+}
+
+body {
+    scrollbar-width: none;
+}

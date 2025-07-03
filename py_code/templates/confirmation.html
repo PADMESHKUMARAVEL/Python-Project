@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Purchase Confirmation</title>
+    <meta http-equiv="refresh" content="5;url={{ url_for('home') }}">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Fallback styling if image fails to load */
+        .car-image {
+            background-color: #f3f4f6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6b7280;
+            min-height: 200px;
+        }
+        .car-image img {
+            max-height: 200px;
+            object-fit: contain;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen bg-gradient-to-r from-green-300 to-blue-500 text-center">
+    <div class="bg-white shadow-md rounded-lg p-8 max-w-md w-full">
+        <h2 class="text-2xl font-bold text-green-600 mb-4">Thank you for your purchase!</h2>
+
+        <p class="text-gray-700 text-lg mb-2">Dear <strong>{{ name }}</strong>,</p>
+        <p class="text-gray-700 text-md mb-4">
+            You have successfully purchased a <strong>{{ car.car_name }} {{ car.car_model }}</strong>
+            ({{ car.vehicle_type }}) for <strong>₹{{ '{:,}'.format(car.price) }}</strong>.
+        </p>
+
+        <div class="mb-4 car-image">
+            {% if car.image_url %}
+                <img src="{{ car.image_url }}"
+                     alt="{{ car.car_name }} {{ car.car_model }}"
+                     class="w-full rounded-lg shadow"
+                     onerror="this.onerror=null;this.src='https://stimg.cardekho.com/images/car-images/generic/{{ car.vehicle_type.lower() }}.jpg';this.parentElement.classList.add('justify-center','items-center','flex-col');this.parentElement.innerHTML='<span class=\'text-gray-500 mb-2\'>Image not available</span><img src=\'https://stimg.cardekho.com/images/car-images/generic/{{ car.vehicle_type.lower() }}.jpg\' class=\'w-3/4 h-auto\'>'">
+            {% else %}
+                <div class="text-gray-500 mb-2">Image not available</div>
+                <img src="https://stimg.cardekho.com/images/car-images/generic/{{ car.vehicle_type.lower() }}.jpg"
+                     class="w-3/4 h-auto"
+                     alt="Generic {{ car.vehicle_type }} image">
+            {% endif %}
+        </div>
+
+        <p class="text-sm text-gray-500 mb-6">
+            You will be redirected to the login page shortly...
+        </p>
+
+        <a href="{{ url_for('home') }}" class="text-white bg-green-500 hover:bg-green-600 px-4 py-2 rounded transition-all">
+            Go to Login Now
+        </a>
+    </div>
+</body>
+</html>

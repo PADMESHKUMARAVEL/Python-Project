@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Menu</title>
+  <style>
+    body {
+      background-image: url('{{ url_for('static', filename='car3.jpg') }}');
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center;
+      height: 100vh;
+      font-family: cursive;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .menu-box {
+      background: rgba(255, 255, 255, 0.95);
+      padding: 40px;
+      border-radius: 15px;
+      text-align: center;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+    }
+
+    h2 {
+      margin-bottom: 25px;
+    }
+
+    .button {
+      display: block;
+      width: 250px;
+      margin: 10px auto;
+      padding: 12px;
+      font-size: 16px;
+      background-color: #1E90FF;
+      color: white;
+      text-decoration: none;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .button:hover {
+      background-color: #0f70c9;
+    }
+
+    .logout-button {
+      margin-top: 25px;
+      background-color: #f04e4e;
+    }
+
+    .logout-button:hover {
+      background-color: #d03434;
+    }
+  </style>
+</head>
+<body>
+  <div class="menu-box">
+    <h2>Welcome to Car Sales Dashboard</h2>
+
+    {% if session['role'] == 'admin' %}
+      <a href="{{ url_for('purchase') }}" class="button">Car Sales Entry</a>
+      <a href="{{ url_for('compare') }}" class="button">Compare Cars</a>
+      <a href="{{ url_for('sales') }}" class="button">Sales Graph</a>
+    {% elif session['role'] == 'user' %}
+      <a href="{{ url_for('purchase') }}" class="button">Car Sales Entry</a>
+    {% endif %}
+
+    <a href="{{ url_for('logout') }}" class="button logout-button">Logout</a>
+  </div>
+</body>
+</html>
